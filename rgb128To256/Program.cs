@@ -17,12 +17,13 @@ This formats the data and places it into json file format.
 Removes all bloat, including zero and infinity.\n
 Removes the UV
 Reduces the decimal format from.^ 15 to.^ 3");
-            Console.Write("File Name:");
+            
             while (true)
             {
+                Console.Write("File Name:");
                 string FileName = Console.ReadLine();
 
-                if (FileName.Trim(' ') != "")
+                if (FileName.Trim(' ') != "" && System.IO.File.Exists(FileName) )
                 {
                     Data D = new Data( "Data.txt");
                     break;
