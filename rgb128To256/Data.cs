@@ -1,18 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Web;
-using System.Web.DynamicData;
-using System.Web.Script.Serialization;
-using System.Windows.Forms;
 using System.Threading;
 
 namespace KinnectDataToHexAndXYZ
@@ -22,13 +10,13 @@ namespace KinnectDataToHexAndXYZ
 
         public string FileName { get; private set; }
         public int DecimalPlace { get; private set; }
-        public int ID { get; private set; }
+        //public int ID { get; private set; }
 
         public Thread T { get; private set; }
 
         public Data(int ID, string FileName = "Data.txt", int DecimalPlace = 3)
         {
-            this.ID = ID;
+            //this.ID = ID;
             this.FileName = FileName;
             this.DecimalPlace = DecimalPlace;
             //Firstclean();
@@ -36,55 +24,15 @@ namespace KinnectDataToHexAndXYZ
             T.Start();
         }
 
-        //public static void Removergb(string FileName)
-        //{
-
-        //    var Colors = "color";
-        //    File.WriteAllText("FileNameQ.txt", File.ReadAllText(FileName).Replace(Colors, "Q"));
-
-        //    var data = File.ReadAllText("FileNameQ.txt");
-
-        //    char[] delimiterChars = { 'Q' };
-
-        //    string[] words = data.Split(delimiterChars);
-
-        //    AppendOutput($"{words.Length} words in text:");
-        //    var i = 0;
-        //    foreach (string s in words)
-        //    {
-        //        File.WriteAllText("split" + i++ + FileName, s);
-
-        //    }
-
-        //    // Keep the console window open in debug mode.
-        //    AppendOutput("Press any key to exit.");
-        //    //Console.ReadKey();
-
-        //    if (data.Contains('Q'))
-        //        AppendOutput("found color");
-
-        //    //   int index = data.IndexOf('Q');
-        //    //   string result = data.Substring(0, index);
-
-        //    //  File.WriteAllText("xyz"+FileName , result);
-
-
-        //}
 
         //,{"type":"IMPLIES","t1":{"type":"Occupy3DPointDouble","x":"0.0","y":"0.0","z":"0.0"},"t2":{"type":"ComponentState","state":"(-Infinity,-Infinity)"}}
 
-        private void AppendOutput(string data)
-        {
-
-            Globals.Main_Form.AppendOutput($"({ID}):{data}");
-
-        }
-
         public void Firstclean()
         {
-
-            AppendOutput("splitting file into two....");
-            string input = File.ReadAllText(FileName);
+            Console.Title = "Firstclean";
+            string filename = FileName;
+            Console.WriteLine("splitting file into two....");
+            string input = File.ReadAllText(filename);
             var rgb = "lor";
             input = input.Replace(rgb, "Q");
             var xyzOutput = input;
@@ -99,14 +47,14 @@ namespace KinnectDataToHexAndXYZ
 
 
 
-            File.WriteAllText("xyz." + FileName, xyzOutput);
-            File.WriteAllText("rgb." + FileName, rgbOutput);
+            File.WriteAllText("xyz." + filename, xyzOutput);
+            File.WriteAllText("rgb." + filename, rgbOutput);
 
 
-            var FileNamergb = "rgb." + FileName;
+            var filenamergb = "rgb." + filename;
 
-            AppendOutput("removing garbage from xyz");
-            FileName = "xyz." + FileName;
+            Console.WriteLine("removing garbage from xyz");
+            filename = "xyz." + filename;
 
             var old = '"';
             var rep = "";
@@ -130,39 +78,40 @@ namespace KinnectDataToHexAndXYZ
             var old5 = "},t2:{type:ComponentState,state:";
             var rep5 = "], UV:";
 
-            
-            File.WriteAllText(FileName, File.ReadAllText(FileName).Replace(old.ToString(), rep));
-            File.WriteAllText(FileName, File.ReadAllText(FileName).Replace(old2, rep2));
-            File.WriteAllText(FileName, File.ReadAllText(FileName).Replace(old4, rep4));
-            File.WriteAllText(FileName, File.ReadAllText(FileName).Replace(old5, rep5));
 
 
-            File.WriteAllText(FileName, File.ReadAllText(FileName).Replace(",x:", ""));
-            File.WriteAllText(FileName, File.ReadAllText(FileName).Replace(oldy, repy));
-            File.WriteAllText(FileName, File.ReadAllText(FileName).Replace(oldz, repz));
-
-            AppendOutput("Finish first stage");
-
-            Xyz();
-
-            AppendOutput("Finish XYZ stage");
+            File.WriteAllText(filename, File.ReadAllText(filename).Replace(old.ToString(), rep));
+            File.WriteAllText(filename, File.ReadAllText(filename).Replace(old2, rep2));
+            File.WriteAllText(filename, File.ReadAllText(filename).Replace(old4, rep4));
+            File.WriteAllText(filename, File.ReadAllText(filename).Replace(old5, rep5));
 
 
-            AppendOutput("Converting 128 bit to 256 bit");
-            OneTwo8ToTwo56();
-            AppendOutput("Finish 128 to 256 stage");
+            File.WriteAllText(filename, File.ReadAllText(filename).Replace(",x:", ""));
+            File.WriteAllText(filename, File.ReadAllText(filename).Replace(oldy, repy));
+            File.WriteAllText(filename, File.ReadAllText(filename).Replace(oldz, repz));
 
-            AppendOutput("Converting 256 rgb to hex");
-            RGBToHex();
-            AppendOutput("Finish hex stage");
+            Console.WriteLine("Finish first stage");
+
+            Xyz(filename);
+
+            Console.WriteLine("Finish XYZ stage");
+
+
+            Console.WriteLine("Converting 128 bit to 256 bit");
+            OneTwo8ToTwo56(filenamergb);
+            Console.WriteLine("Finish 128 to 256 stage");
+
+            Console.WriteLine("Converting 256 rgb to hex");
+            RGBToHex(filenamergb);
+            Console.WriteLine("Finish hex stage");
 
         }
 
 
-        public void OneTwo8ToTwo56()
+        public void OneTwo8ToTwo56(string filename)
         {
 
-
+            Console.Title = "128 TO 256";
             var split = ',';
 
 
@@ -170,13 +119,13 @@ namespace KinnectDataToHexAndXYZ
             var aa = '"';
             var a = "";
 
-            File.WriteAllText(FileName, File.ReadAllText(FileName).Replace(aa.ToString(), a));
+            File.WriteAllText(filename, File.ReadAllText(filename).Replace(aa.ToString(), a));
 
 
             var cc = "{type:ComponentState,state:";
             var c = "C:";
 
-            File.WriteAllText(FileName, File.ReadAllText(FileName).Replace(cc, c));
+            File.WriteAllText(filename, File.ReadAllText(filename).Replace(cc, c));
 
 
             //first replace all n.0 with n
@@ -184,9 +133,9 @@ namespace KinnectDataToHexAndXYZ
             var nn = ".0";
             var n = "";
 
-            File.WriteAllText(FileName, File.ReadAllText(FileName).Replace(nn, n));
+            File.WriteAllText(filename, File.ReadAllText(filename).Replace(nn, n));
 
-            AppendOutput("removed all .0");
+            Console.WriteLine("removed all .0");
 
             int i = -1;
             int x = (256 / 2) * -1;
@@ -203,17 +152,16 @@ namespace KinnectDataToHexAndXYZ
                 replace = (i * -1) + 127;
                 rep = replace.ToString() + ')';
                 rep2 = replace.ToString() + ",";
-                AppendOutput("\nold: " + old + " new: " + rep);
+                Console.WriteLine("\nold: " + old + " new: " + rep);
 
-                File.WriteAllText(FileName, File.ReadAllText(FileName).Replace(old, rep));
-                File.WriteAllText(FileName, File.ReadAllText(FileName).Replace(old2, rep2));
+                File.WriteAllText(filename, File.ReadAllText(filename).Replace(old, rep));
+                File.WriteAllText(filename, File.ReadAllText(filename).Replace(old2, rep2));
                 old = null;
                 rep = null;
 
                 i--;
             }
-            File.WriteAllText(FileName + "256bitColor", File.ReadAllText(FileName));
-            // AppendOutput(lines);
+            // Console.WriteLine(lines);
 
 
 
@@ -221,11 +169,12 @@ namespace KinnectDataToHexAndXYZ
 
         }
 
-        public void RGBToHex()
+        public void RGBToHex(string filename)
         {
+            Console.Title = "RGB TO HEX";
             //C:(26,128,24)},  ==> {"C":"129,141,137"},
 
-            var input = File.ReadAllText(FileName);
+            var input = File.ReadAllText(filename);
 
             var newstr = Regex.Replace(
                      input,
@@ -238,13 +187,13 @@ namespace KinnectDataToHexAndXYZ
                      }
 
                  );
-            File.WriteAllText(FileName, File.ReadAllText(FileName).Replace(input, newstr));
+            File.WriteAllText(filename, File.ReadAllText(filename).Replace(input, newstr));
 
 
 
             //remove any starting text crap
 
-            input = File.ReadAllText(FileName);
+            input = File.ReadAllText(filename);
 
             if (input.Contains("["))
             {
@@ -255,39 +204,40 @@ namespace KinnectDataToHexAndXYZ
             input = input.Replace("}", "]");
             input = input.Replace("{" + '"' + "C" + '"' + ":", "[");
             input = input.Replace("{", "");
-            File.WriteAllText(FileName, input);
-            File.WriteAllText(FileName + "HEX", input);
+            File.WriteAllText(filename, input);
+            File.WriteAllText("HEX" + filename, input);
+
             /*
-                        File.WriteAllText(FileName, File.ReadAllText(FileName).Replace(input, newstr));
+                        File.WriteAllText(filename, File.ReadAllText(filename).Replace(input, newstr));
 
-                        File.WriteAllText(FileName, input.Replace("[", "rgb='[{"));
+                        File.WriteAllText(filename, input.Replace("[", "rgb='[{"));
 
-                        File.WriteAllText(FileName, input.Replace("}", "]"));
+                        File.WriteAllText(filename, input.Replace("}", "]"));
 
-                        File.WriteAllText(FileName, input.Replace("{"+'"'+"C"+'"'+":", "["));
+                        File.WriteAllText(filename, input.Replace("{"+'"'+"C"+'"'+":", "["));
                         */
 
         }
 
 
-        public void xyzReg()
+        public void xyzReg(string filename)
         {
 
-            string input = File.ReadAllText(FileName);
+            string input = File.ReadAllText(filename);
 
             //   var newstr = decimal.Round(yourValue, 3 MidpointRounding.AwayFromZero);
 
             var newstr = Regex.Replace(input, @"\\D\\d*", m => m.ToString().Remove(7));
-            File.WriteAllText(FileName, File.ReadAllText(FileName).Replace(input, newstr));
+            File.WriteAllText(filename, File.ReadAllText(filename).Replace(input, newstr));
 
         }
-        //change this to xyz(string FileName, int DecimalPlace)
-        public  void Xyz()
+        //change this to xyz(string filename, int DecimalPlace)
+        public void Xyz(string filename)
         {
+            Console.Title = "XYZ";
+            Console.WriteLine(filename);
 
-            AppendOutput(FileName);
-
-            string input = File.ReadAllText(FileName);
+            string input = File.ReadAllText(filename);
 
             System.Text.StringBuilder output = new System.Text.StringBuilder();
 
@@ -307,7 +257,7 @@ namespace KinnectDataToHexAndXYZ
                     //change 3 to DecimalePlace
                     string xyz = decimal.Round(newstr, DecimalPlace, MidpointRounding.AwayFromZero).ToString();
 
-                    AppendOutput($"[{newstr}] [{xyz}]");
+                    Console.WriteLine($"[{newstr}] [{xyz}]");
 
                     if (ii == 0)
                     {
@@ -334,8 +284,8 @@ namespace KinnectDataToHexAndXYZ
                     {
                         ii = 0;
                     }
-                    //   File.WriteAllText("3" + FileName, output.ToString());
-                    AppendOutput(i++.ToString());
+                    //   File.WriteAllText("3" + filename, output.ToString());
+                    Console.WriteLine(i++);
                     // input = input.Replace(m.ToString(), m.ToString().Remove(7));
                 }
 
@@ -347,14 +297,14 @@ namespace KinnectDataToHexAndXYZ
 
             }
             output.Remove(output.Length - 1, 1).Append("]");
-            File.WriteAllText(FileName, output.ToString());
-            File.WriteAllText(FileName, File.ReadAllText(FileName).Replace("\n", ""));
+            File.WriteAllText(filename, output.ToString());
+            File.WriteAllText(filename, File.ReadAllText(filename).Replace("\n", ""));
         }
 
 
-         void NoLines(string FileName)
+        void NoLines(string filename)
         {
-            File.WriteAllText(FileName, File.ReadAllText(FileName).Replace("\n", ""));
+            File.WriteAllText(filename, File.ReadAllText(filename).Replace("\n", ""));
 
         }
 

@@ -1,18 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Security.Cryptography.X509Certificates;
-using System.Text.RegularExpressions;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Web;
-using System.Web.DynamicData;
-using System.Web.Script.Serialization;
-using System.Windows.Forms;
+
 
 namespace KinnectDataToHexAndXYZ
 {
@@ -22,23 +9,29 @@ namespace KinnectDataToHexAndXYZ
         
         static void Main(string[] args)
         {
+            Console.Title = "Bespaced data to xyz and hex, Argyll McGhie";
+            Console.WriteLine(@"Author: Argyll McGhie
 
-            Application.EnableVisualStyles();
-            Globals.Main_Form.ShowDialog();
+For Bespaced data to xyz and hex.
+This formats the data and places it into json file format.
+Removes all bloat, including zero and infinity.\n
+Removes the UV
+Reduces the decimal format from.^ 15 to.^ 3");
 
-            var filename = "file";
+            while (true)
+            {
+                string FileName = Console.ReadLine();
+
+                if (FileName.Trim(' ') != "")
+                {
+                    Data D = new Data(0, "Data.txt");
+                    break;
+                }
+
+            }
+            while (true) { }
 
 
-            //   File.WriteAllText("rgb.30 RAW.txt", File.ReadAllText("rgb.30 RAW.txt").Replace(",["+'"'+"805", "]'"));
-            // RGBToHex("22.rgb.data.247k.txt");
-
-            //Firstclean(filename);
-            // xyzReg("xyz.30 RAW.txt");
-            //  Xyz1000Int("xyz.30 RAW.txt");
-            //Xyz1000("xyz.30 RAW.txt");
-
-
-            //  NoLines("xyz.30 RAW.txt");
 
         }
 
