@@ -14,7 +14,7 @@ namespace KinnectDataToHexAndXYZ
 
         public Thread T { get; private set; }
 
-        public Data(int ID, string FileName = "Data.txt", int DecimalPlace = 3)
+        public Data(string FileName, int DecimalPlace = 3)
         {
             //this.ID = ID;
             this.FileName = FileName;
@@ -152,8 +152,9 @@ namespace KinnectDataToHexAndXYZ
                 replace = (i * -1) + 127;
                 rep = replace.ToString() + ')';
                 rep2 = replace.ToString() + ",";
-                Console.WriteLine("\nold: " + old + " new: " + rep);
-
+                //Console.WriteLine("\nold: " + old + " new: " + rep);
+                Console.Clear();
+                Console.WriteLine("%" + (i * -1) / (x * -1) );
                 File.WriteAllText(filename, File.ReadAllText(filename).Replace(old, rep));
                 File.WriteAllText(filename, File.ReadAllText(filename).Replace(old2, rep2));
                 old = null;
@@ -237,17 +238,24 @@ namespace KinnectDataToHexAndXYZ
             Console.Title = "XYZ";
             Console.WriteLine(filename);
 
-            string input = File.ReadAllText(filename);
+            string input = File.ReadAllText(filename).Replace("(0.0, 0.0, 0.0)," , "");
 
             System.Text.StringBuilder output = new System.Text.StringBuilder();
+
+            
 
             output.Append("xyz = [");
 
 
             string pat = "(-?\\d\\D\\d*)";
 
+            
+
             var ii = 0;
             var i = 0;
+
+            int total = Regex.Matches(input, pat).Count;
+            int iii = 10;
 
             foreach (Match m in Regex.Matches(input, pat))
             {
@@ -257,35 +265,48 @@ namespace KinnectDataToHexAndXYZ
                     //change 3 to DecimalePlace
                     string xyz = decimal.Round(newstr, DecimalPlace, MidpointRounding.AwayFromZero).ToString();
 
-                    Console.WriteLine($"[{newstr}] [{xyz}]");
+                    //Console.WriteLine($"[{newstr}] [{xyz}]");
 
                     if (ii == 0)
                     {
+
+
                         output.Append(" [" + xyz + ", ");
                         ii++;
                     }
                     else if (ii == 1)
                     {
+
+
                         output.Append(xyz + ", ");
                         ii++;
                     }
                     else if (ii == 2)
 
                     {
+
+
                         output.Append(xyz + "],");
                         ii++;
                     }
 
                     else if (ii == 3)
                     {
+
+
                         ii++;
                     }
                     else if (ii == 4)
                     {
+
+
                         ii = 0;
                     }
                     //   File.WriteAllText("3" + filename, output.ToString());
-                    Console.WriteLine(i++);
+                    i++;
+
+                        
+                    Console.Title = $"XYZ: Done {i}/{total}";
                     // input = input.Replace(m.ToString(), m.ToString().Remove(7));
                 }
 

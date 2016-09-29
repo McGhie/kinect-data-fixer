@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Threading;
 
 namespace KinnectDataToHexAndXYZ
 {
@@ -17,24 +17,39 @@ This formats the data and places it into json file format.
 Removes all bloat, including zero and infinity.\n
 Removes the UV
 Reduces the decimal format from.^ 15 to.^ 3");
-
+            Console.Write("File Name:");
             while (true)
             {
                 string FileName = Console.ReadLine();
 
                 if (FileName.Trim(' ') != "")
                 {
-                    Data D = new Data(0, "Data.txt");
+                    Data D = new Data( "Data.txt");
                     break;
                 }
 
             }
-            while (true) { }
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Working.");
+                Thread.Sleep(3000);
+                Console.Clear();
+                Console.WriteLine("Working..");
+                Thread.Sleep(3000);
+                Console.Clear();
+                Console.WriteLine("Working...");
+                Thread.Sleep(3000);
+                Console.Clear();
+                Console.WriteLine("Working....");
+
+            }
 
 
 
         }
 
+        
 
         //remove not being used
     }
