@@ -1,8 +1,0 @@
-C:\Users\blue\documents\visual studio 2015\Projects\rgb128To256\bin\Debug\KinnectDataToHexAndXYZ.exe.config
-C:\Users\blue\documents\visual studio 2015\Projects\rgb128To256\bin\Debug\KinnectDataToHexAndXYZ.exe
-C:\Users\blue\documents\visual studio 2015\Projects\rgb128To256\bin\Debug\KinnectDataToHexAndXYZ.pdb
-C:\Users\blue\documents\visual studio 2015\Projects\rgb128To256\bin\Debug\Mono.HttpUtility.dll
-C:\Users\blue\documents\visual studio 2015\Projects\rgb128To256\bin\Debug\Newtonsoft.Json.dll
-C:\Users\blue\documents\visual studio 2015\Projects\rgb128To256\bin\Debug\Newtonsoft.Json.xml
-C:\Users\blue\documents\visual studio 2015\Projects\rgb128To256\obj\Debug\KinnectDataToHexAndXYZ.exe
-C:\Users\blue\documents\visual studio 2015\Projects\rgb128To256\obj\Debug\KinnectDataToHexAndXYZ.pdb
