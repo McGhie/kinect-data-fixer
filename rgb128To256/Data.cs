@@ -21,11 +21,11 @@ namespace KinnectDataToHexAndXYZ
             this.DecimalPlace = DecimalPlace;
             //Firstclean();
             T = new Thread(new ThreadStart(Firstclean));
-            T.Start();
+
+             T.Start();
+         
         }
 
-
-        //,{"type":"IMPLIES","t1":{"type":"Occupy3DPointDouble","x":"0.0","y":"0.0","z":"0.0"},"t2":{"type":"ComponentState","state":"(-Infinity,-Infinity)"}}
 
         public void Firstclean()
         {
@@ -45,13 +45,15 @@ namespace KinnectDataToHexAndXYZ
 
             }
 
-
+            var filenamergb = "rgb." + filename;
+            var filenamehex = "hex." + filename;
 
             File.WriteAllText("xyz." + filename, xyzOutput);
-            File.WriteAllText("rgb." + filename, rgbOutput);
 
-
-            var filenamergb = "rgb." + filename;
+            File.WriteAllText(filenamergb, rgbOutput);
+        
+           
+        
 
             Console.WriteLine("removing garbage from xyz");
             filename = "xyz." + filename;
@@ -95,16 +97,19 @@ namespace KinnectDataToHexAndXYZ
             Xyz(filename);
 
             Console.WriteLine("Finish XYZ stage");
+            Console.WriteLine("Removing floor");
+            removeFloor(filename);
 
+        //    Console.WriteLine("Converting 128 bit to 256 bit");
+          //  OneTwo8ToTwo56(filenamergb);
+          //  Console.WriteLine("Finish 128 to 256 stage");
 
-            Console.WriteLine("Converting 128 bit to 256 bit");
-            OneTwo8ToTwo56(filenamergb);
-            Console.WriteLine("Finish 128 to 256 stage");
-
-            Console.WriteLine("Converting 256 rgb to hex");
-            RGBToHex(filenamergb);
-            Console.WriteLine("Finish hex stage");
-
+         //   Console.WriteLine("Converting 256 rgb to hex");
+            
+          //  File.WriteAllText(filenamehex, File.ReadAllText(filenamergb));
+          // RGBToHex(filenamehex);
+          //  Console.WriteLine("Finish hex stage");
+            Environment.Exit(0);
         }
 
 
@@ -112,21 +117,28 @@ namespace KinnectDataToHexAndXYZ
         {
 
             Console.Title = "128 TO 256";
+
+            
             var split = ',';
-
-
 
             var aa = '"';
             var a = "";
 
             File.WriteAllText(filename, File.ReadAllText(filename).Replace(aa.ToString(), a));
 
+            string input = File.ReadAllText(filename);
 
+            input = input.Substring(input.IndexOf('T') + 2);
+            File.WriteAllText(filename, input);
+
+            var compstate = "ComponentState((";
+
+            File.WriteAllText(filename, File.ReadAllText(filename).Replace("ComponentState((", "("));
             var cc = "{type:ComponentState,state:";
             var c = "C:";
 
             File.WriteAllText(filename, File.ReadAllText(filename).Replace(cc, c));
-
+            File.WriteAllText(filename, File.ReadAllText(filename).Replace("))", ")"));
 
             //first replace all n.0 with n
 
@@ -154,7 +166,9 @@ namespace KinnectDataToHexAndXYZ
                 rep2 = replace.ToString() + ",";
                 //Console.WriteLine("\nold: " + old + " new: " + rep);
                 Console.Clear();
-                Console.WriteLine("%" + (i * -1) / (x * -1) );
+
+                Console.WriteLine("Progress " + (i*-1) + "/ " + (x*-1) );
+
                 File.WriteAllText(filename, File.ReadAllText(filename).Replace(old, rep));
                 File.WriteAllText(filename, File.ReadAllText(filename).Replace(old2, rep2));
                 old = null;
@@ -172,19 +186,19 @@ namespace KinnectDataToHexAndXYZ
 
         public void RGBToHex(string filename)
         {
-            Console.Title = "RGB TO HEX";
+            Console.Title = "RGB256 TO HEX";
             //C:(26,128,24)},  ==> {"C":"129,141,137"},
 
             var input = File.ReadAllText(filename);
 
             var newstr = Regex.Replace(
                      input,
-                     @"C:\([ ]*(\d+)[ ]*,[ ]*(\d+)[ ]*,[ ]*(\d+)[ ]*\)}",
+                     @"\([ ]*(\d+)[ ]*,[ ]*(\d+)[ ]*,[ ]*(\d+)[ ]*\)",
                      m =>
                      {
-                         return "{" + '"' + "C" + '"' + ":" + '"' + Int32.Parse(m.Groups[1].Value).ToString("X2") +
+                         return "[" + Int32.Parse(m.Groups[1].Value).ToString("X2") +
                          Int32.Parse(m.Groups[2].Value).ToString("X2") +
-                         Int32.Parse(m.Groups[3].Value).ToString("X2") + '"' + '}';
+                         Int32.Parse(m.Groups[3].Value).ToString("X2") + ']';
                      }
 
                  );
@@ -201,49 +215,33 @@ namespace KinnectDataToHexAndXYZ
                 input = input.Substring(input.IndexOf('[') - 1);
 
             }
-            input = input.Replace("[", "rgb='[{");
-            input = input.Replace("}", "]");
-            input = input.Replace("{" + '"' + "C" + '"' + ":", "[");
-            input = input.Replace("{", "");
+            input = input.Replace("([", "hex=[[");
+            input = input.Replace(":[C:", "hex=[");
+            input = input.Replace(")))", "]");
+            input = input.Replace("C" + ":[", "[");
+            input = input.Replace("}", "");
+          //
             File.WriteAllText(filename, input);
-            File.WriteAllText("HEX" + filename, input);
 
-            /*
-                        File.WriteAllText(filename, File.ReadAllText(filename).Replace(input, newstr));
-
-                        File.WriteAllText(filename, input.Replace("[", "rgb='[{"));
-
-                        File.WriteAllText(filename, input.Replace("}", "]"));
-
-                        File.WriteAllText(filename, input.Replace("{"+'"'+"C"+'"'+":", "["));
-                        */
-
+           // Environment.Exit(0);
         }
 
-
-        public void xyzReg(string filename)
-        {
-
-            string input = File.ReadAllText(filename);
-
-            //   var newstr = decimal.Round(yourValue, 3 MidpointRounding.AwayFromZero);
-
-            var newstr = Regex.Replace(input, @"\\D\\d*", m => m.ToString().Remove(7));
-            File.WriteAllText(filename, File.ReadAllText(filename).Replace(input, newstr));
-
-        }
+ 
         //change this to xyz(string filename, int DecimalPlace)
         public void Xyz(string filename)
         {
-            Console.Title = "XYZ";
+            Console.Title = "xyz";
             Console.WriteLine(filename);
 
-            string input = File.ReadAllText(filename).Replace("(0.0, 0.0, 0.0)," , "");
+           
+
+            string input = File.ReadAllText(filename);
+
+           
 
             System.Text.StringBuilder output = new System.Text.StringBuilder();
 
             
-
             output.Append("xyz = [");
 
 
@@ -261,9 +259,13 @@ namespace KinnectDataToHexAndXYZ
             {
                 try
                 {
-                    var newstr = decimal.Parse(m.Value);
+                    string xyz = "0";
                     //change 3 to DecimalePlace
-                    string xyz = decimal.Round(newstr, DecimalPlace, MidpointRounding.AwayFromZero).ToString();
+                    if (m.Value != "0.0")
+                    {
+                        xyz = decimal.Round(decimal.Parse(m.Value), DecimalPlace, MidpointRounding.AwayFromZero).ToString();
+                    }
+                    
 
                     //Console.WriteLine($"[{newstr}] [{xyz}]");
 
@@ -306,7 +308,7 @@ namespace KinnectDataToHexAndXYZ
                     i++;
 
                         
-                    Console.Title = $"XYZ: Done {i}/{total}";
+                    Console.Title = $"XYZ: Completed {i}/{total}";
                     // input = input.Replace(m.ToString(), m.ToString().Remove(7));
                 }
 
@@ -317,15 +319,96 @@ namespace KinnectDataToHexAndXYZ
 
 
             }
+           
+            
             output.Remove(output.Length - 1, 1).Append("]");
+            
+            
             File.WriteAllText(filename, output.ToString());
-            File.WriteAllText(filename, File.ReadAllText(filename).Replace("\n", ""));
+            File.WriteAllText(filename, File.ReadAllText(filename).Replace(" [0, 0, 0],", ""));
+            NoLines(filename);
         }
 
 
         void NoLines(string filename)
         {
+           
+
             File.WriteAllText(filename, File.ReadAllText(filename).Replace("\n", ""));
+
+        }
+
+        void removeFloor(string Filename)
+        {
+            var dogs = 0;
+            var cats = 0;
+            var filename = "NF" + Filename;
+            Console.Title=("removing floor"+ dogs + " / " + cats  );
+            File.WriteAllText(filename, File.ReadAllText(Filename).Replace("xyz = [ ", "").Replace("[", "").Replace("]", ""));
+           
+            var splitter = ',';
+            var xyzString = File.ReadAllText(filename);
+            string[] xyz=xyzString.Split(splitter);
+            string newxyz = "xyz = [";
+
+            cats = xyz.Length;
+            try
+            {
+                for (int Y = 2; Y < xyz.Length; Y = Y + 3)
+                {
+                    var Yint = decimal.Parse(xyz[Y]);
+                    Console.WriteLine(Yint);
+                    if (Yint > (decimal) 2.5)
+                    {
+                        dogs++;
+                        Console.Title = ("removing floor" + dogs + " / " + cats);
+                        xyz[Y] = "dog";
+                        xyz[Y - 1] = "dog";
+                        xyz[Y - 2] = "dog";
+                    }
+                }
+                var counter = 0;
+                foreach (string item in xyz)
+                {
+
+
+                    if (item != "dog")
+                    {
+                      
+                   
+                        counter++;
+                        Console.WriteLine(item);
+                        if (counter == 1)
+                        {
+                            newxyz += "[";
+                            newxyz += item + ", ";
+                        }
+                        else if (counter == 2)
+                        {
+                            newxyz += item + ", ";
+                        }
+                        else if (counter == 3)
+                        {
+                            newxyz += item + "], ";
+                            counter = 0;
+                        }
+
+
+                    }
+
+
+                }
+            }
+            catch (SystemException)
+            {
+                Console.WriteLine("bad error");
+
+            }
+
+            newxyz = newxyz.Remove(newxyz.Length - 2, 1);
+            newxyz += "]";
+            File.WriteAllText(filename, newxyz);
+            Console.WriteLine("End");
 
         }
 

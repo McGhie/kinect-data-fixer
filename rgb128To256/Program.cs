@@ -25,8 +25,15 @@ Reduces the decimal format from.^ 15 to.^ 3");
 
                 if (FileName.Trim(' ') != "" && System.IO.File.Exists(FileName) )
                 {
-                    Data D = new Data( "Data.txt");
-                    break;
+                    try
+                    {
+                        Data D = new Data(FileName);
+                        break;
+                    }
+                    catch (SystemException)
+                    {
+
+                    }
                 }
 
             }
@@ -52,7 +59,7 @@ Reduces the decimal format from.^ 15 to.^ 3");
 
         
 
-        //remove not being used
+        
     }
 
 }
